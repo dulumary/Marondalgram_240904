@@ -9,7 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.marondal.marondalgram.user.domain.User;
 import com.marondal.marondalgram.user.service.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/user")
@@ -51,6 +55,37 @@ public class UserRestController {
 		resultMap.put("isDuplicate", isDuplicate);
 		
 		return resultMap;
+	}
+	
+	@PostMapping("/login")
+	public Map<String, String> login(
+			@RequestParam("loginId") String loginId
+			, @RequestParam("password") String password
+			, HttpServletRequest request) {
+		
+		User user = userService.getUser(loginId, password);
+		
+		Map<String, String> resultMap = new HashMap<>();
+		
+		if(user != null) {
+			resultMap.put("result", "success");
+			
+			// HttpServletRequest 객체로 부터 얻어 온다. 
+			// 특정 클라이언트에서 사용될 session을 의미 
+			HttpSession session = request.getSession();
+			// key, value 형태의 데이터 관리 
+			// 로그인이 되었다는 정보를 저장 
+			// 어떤 페이지에서든 해당 정보를 사용할 수 있다. 
+			// 로그인된 사용자 정보를 저장해서 사용자 정보 기반의 페이지를 구성할 수 있다. 
+			session.setAttribute("userId", user.getId());
+			session.setAttribute("userLoginId", user.getLoginId());
+			
+		} else {
+			resultMap.put("result", "fail");
+		}
+		
+		return resultMap;
+		
 	}
 
 }

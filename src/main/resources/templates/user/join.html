@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" 
     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
     layout:decorate="~{layouts/noheader}">
-	    <section layout:fragment="contents" class="content d-flex justify-content-center my-5">
+	    <section layout:fragment="contents" class="contents d-flex justify-content-center my-5">
 	        <div>
 	            <div class="login-box d-flex justify-content-center align-items-start bg-white  border rounded">
 	                <div class="w-100 p-4">
@@ -39,12 +39,25 @@
 	    <script layout:fragment="script">
 	    	$(document).ready(function() {
 	    		
+	    		// 중복확인 여부
+	    		var checkDuplicate = false;
+	    		// 중복 여부 
+	    		var isDuplicateId = true;
+	    		
+	    		$("#idInput").on("input", function() {
+	    			// 중복확인 과정 초기화 
+	    			checkDuplicate = false;
+	    			isDuplicateId = true;
+	    			
+	    			$("#availableText").addClass("d-none");
+	    			$("#duplicateText").addClass("d-none");
+	    		});
 	    		
 	    		$("#duplicateBtn").on("click", function() {
 	    			let id = $("#idInput").val();
 	    			
 	    			if(id == "") {
-        				alert("이름을 입력하세요");
+        				alert("아이디를 입력하세요");
         				return ;
         			}
 	    			
@@ -53,6 +66,9 @@
 	    				, url:"/user/duplicate-id"
 	    				, data:{"loginId":id}
 	    				, success:function(data) {
+	    					
+	    					checkDuplicate = true;
+	    					isDuplicateId = data.isDuplicate;
 	    					if(data.isDuplicate) {
 	    						$("#duplicateText").removeClass("d-none");
 	    						$("#availableText").addClass("d-none");
@@ -79,7 +95,19 @@
         			let email = $("#emailInput").val();
         			
         			if(id == "") {
-        				alert("이름을 입력하세요");
+        				alert("아이디를 입력하세요");
+        				return ;
+        			}
+        			
+        			// 중복확인을 진행하지 않은 경우 
+        			if(!checkDuplicate) {
+        				alert("아이디 중복확인을 해주세요");
+        				return;
+        			}
+        			
+        			// 아이디가 중복된 경우 
+        			if(isDuplicateId) {
+        				alert("아이디가 중복되었습니다");
         				return ;
         			}
         			

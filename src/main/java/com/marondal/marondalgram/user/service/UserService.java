@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.marondal.marondalgram.common.hash.HashingEncoder;
+import com.marondal.marondalgram.user.domain.User;
 import com.marondal.marondalgram.user.repository.UserRepository;
 
 @Service
@@ -40,6 +41,14 @@ public class UserService {
 		} else {
 			return true;
 		}
+	}
+	
+	public User getUser(String loginId, String password) {
+		
+		String encryptPassword = encoder.encode(password);
+		
+		return userRepository.selectUser(loginId, encryptPassword);
+		
 	}
 
 }
