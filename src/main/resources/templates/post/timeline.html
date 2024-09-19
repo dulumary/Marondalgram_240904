@@ -10,8 +10,9 @@
 			<div class="input-box border rounded">
 				<textarea rows="4" class="form-control border-0" id="contentsInput"></textarea>
 				<div class="d-flex justify-content-between p-2">
-					<input type="file" id="fileInput">
-					<button type="button" class="btn btn-info btn-sm" id="uploadInput">입력</button>
+					<h3><i class="bi bi-image" id="imageIcon"></i></h3>
+					<input type="file" id="fileInput" class="d-none">
+					<button type="button" class="btn btn-info btn-sm" id="uploadBtn">입력</button>
 				</div>
 				
 			</div>
@@ -20,13 +21,13 @@
 			<!-- 타임라인 -->
 			<div class="timeline my-4">
 				<!-- 카드 -->
-				<div class="card my-3">
+				<div class="card my-3" th:each="card:${cardViewList}">
 					<div class="d-flex justify-content-between p-2">
-						<div>dulumary</div>
+						<div th:text="${card.loginId}">dulumary</div>
 						<i class="bi bi-three-dots-vertical more-icon"></i>
 					</div>
 					<div>
-						<img class="w-100" src="https://cdn.pixabay.com/photo/2024/08/02/09/01/barracuda-8939250_1280.jpg">
+						<img class="w-100" th:src="${card.imagePath}">
 					</div>
 					<div class="p-2">
 						<i class="bi bi-heart-fill text-danger unlike-icon" ></i>
@@ -34,7 +35,7 @@
 					</div>
 					
 					<div class="p-2">
-						<b>dulumary</b> <span >안녕</span> 
+						<b th:text="${card.loginId}">dulumary</b> <span th:text="${card.contents}">안녕</span> 
 					</div>
 					<!-- 댓글 목록 -->
 					<div class="comment-box">
@@ -61,5 +62,58 @@
 		<!-- /전체 layout -->
 	
 	</section>
+	
+	<script layout:fragment="script">
+		$(document).ready(function() {
+			
+			$("#imageIcon").on("click", function() {
+				$("#fileInput").click();
+			});
+			
+			$("#uploadBtn").on("click", function() {
+				let contents = $("#contentsInput").val();
+				
+				let file = $("#fileInput")[0].files[0];
+				
+				if(contents == "") {
+					alert("내용을 입력하세요");
+					return ;
+				}
+				
+				if(file == null) {
+					alert("이미지를 선택해 주세요");
+					return ;
+				}
+				
+				let formData = new FormData();
+				formData.append("contents", contents);
+				formData.append("imageFile", file);
+				
+				$.ajax({
+					type:"post"
+					, url:"/post/create"
+					, data:formData
+					, enctype:"multipart/form-data"
+					, processData:false
+					, contentType:false
+					, success:function(data) {
+						if(data.result == "success") {
+							location.reload();
+						} else {
+							alert("글 쓰기 실패!!");
+						}
+						
+					}
+					, error:function() {
+						alert("글 쓰기 에러!!");
+					}
+				});
+				
+				
+					
+			});
+			
+		});
+	</script>
     
 </html>
