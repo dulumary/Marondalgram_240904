@@ -2,6 +2,7 @@ package com.marondal.marondalgram.post.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -82,6 +83,26 @@ public class PostService {
 		}	
 		
 		return cardViewList; 
+	}
+	
+	public boolean deletePost(int id, int userId) {
+		
+		Optional<Post> optionalPost = postRepository.findByIdAndUserId(id, userId);
+		Post post = optionalPost.orElse(null);
+		
+		if(post != null) {
+			// 좋아요
+			likeService.deleteLikeByPostId(id);
+			// 댓글
+			commentService.deleteCommentByPostId(id);
+						
+			FileManager.removeFile(post.getImagePath());
+			postRepository.delete(post);
+			return true;
+		} else {
+			return false;
+		}
+		
 	}
 
 }
