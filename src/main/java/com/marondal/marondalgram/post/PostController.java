@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.marondal.marondalgram.post.dto.CardView;
 import com.marondal.marondalgram.post.service.PostService;
@@ -35,5 +36,21 @@ public class PostController {
 		
 		return "post/timeline";
 	}
+	
+	@GetMapping("/newCard")
+	public String newPost(@RequestParam("id") int id, Model model, HttpSession session) {
+		
+		
+		int userId = (Integer)session.getAttribute("userId");
+		
+		List<CardView> cardViewList = postService.getPost(id, userId);
+		
+		model.addAttribute("cardViewList", cardViewList);
+		
+		
+		return "post/newcard";
+	}
+	
+	
 
 }

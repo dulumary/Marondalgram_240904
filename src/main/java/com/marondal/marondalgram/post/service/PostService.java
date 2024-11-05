@@ -54,7 +54,7 @@ public class PostService {
 	
 	public List<CardView> getPostList(int loginUserId) {
 		
-		List<Post> postList = postRepository.findAllByOrderByIdDesc();
+		List<Post> postList = postRepository.findTop3ByOrderByIdDesc();
 		
 		List<CardView> cardViewList = new ArrayList<>();
 		
@@ -103,6 +103,38 @@ public class PostService {
 			return false;
 		}
 		
+	}
+	
+	public List<CardView> getPost(int id, int loginUserId) {
+		List<Post> postList = postRepository.findTop3ByIdLessThanOrderByIdDesc(id);
+		
+		List<CardView> cardViewList = new ArrayList<>();
+		
+		for(Post post:postList) {
+			
+			int userId = post.getUserId();
+			User user = userService.getUserById(userId);
+			
+			int likeCount = likeService.getLikeCount(post.getId());
+			boolean isLike = likeService.isLikeByUserIdAndPostId(loginUserId, post.getId());
+			
+			List<CommentView> commentList = commentService.getCommentListByPostId(post.getId());
+			
+			CardView cardView = CardView.builder()
+								.postId(post.getId())
+								.userId(userId)
+								.contents(post.getContents())
+								.imagePath(post.getImagePath())
+								.loginId(user.getLoginId())
+								.likeCount(likeCount)
+								.isLike(isLike)
+								.commentList(commentList)
+								.build();
+			
+			cardViewList.add(cardView);
+		}	
+		
+		return cardViewList; 
 	}
 
 }

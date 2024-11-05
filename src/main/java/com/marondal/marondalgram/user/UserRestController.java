@@ -3,6 +3,7 @@ package com.marondal.marondalgram.user;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,11 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.marondal.marondalgram.user.domain.User;
 import com.marondal.marondalgram.user.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.constraints.Email;
 
 @RestController
 @RequestMapping("/user")
+@Validated
 public class UserRestController {
 	
 	private UserService userService;
@@ -30,7 +35,7 @@ public class UserRestController {
 			@RequestParam("loginId") String loginId
 			, @RequestParam("password") String password
 			, @RequestParam("name") String name
-			, @RequestParam("email") String email) {
+			, @Email @RequestParam("email") String email) {
 		
 		int count = userService.addUser(loginId, password, name, email);
 		
@@ -45,8 +50,13 @@ public class UserRestController {
 		return resultMap;
 	}
 	
+	
+	
 	@GetMapping("/duplicate-id")
-	public Map<String, Boolean> isDuplicateId(@RequestParam("loginId") String loginId) {
+	@Operation(summary="아이디 중복확인", description="아이디를 전달 받고 중복 여부를 확인합니다.")
+	public Map<String, Boolean> isDuplicateId(
+			@Parameter(description="중복확인할 대상 ID")
+			@RequestParam("loginId") String loginId) {
 		
 		boolean isDuplicate = userService.isDuplicateId(loginId);
 		

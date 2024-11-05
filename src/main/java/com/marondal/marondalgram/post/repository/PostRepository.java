@@ -10,8 +10,10 @@ import com.marondal.marondalgram.post.domain.Post;
 public interface PostRepository extends JpaRepository<Post, Integer> {
 
 	// ORDER BY `id` DESC
-	public List<Post> findAllByOrderByIdDesc();
+	public List<Post> findTop3ByOrderByIdDesc();
 	
 	// WHERE `id` = #{id} AND `userId` = #{userId}
 	public Optional<Post> findByIdAndUserId(int id, int userId);
+	
+	public List<Post> findTop3ByIdLessThanOrderByIdDesc(int id);
 }

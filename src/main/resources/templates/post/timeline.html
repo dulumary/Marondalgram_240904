@@ -21,7 +21,7 @@
 			<!-- 타임라인 -->
 			<div class="timeline my-4">
 				<!-- 카드 -->
-				<div class="card my-3" th:each="card:${cardViewList}">
+				<div class="card my-3" th:each="card, status:${cardViewList}">
 					<div class="d-flex justify-content-between p-2">
 						<div th:text="${card.loginId}">dulumary</div>
 						<i th:if="${card.userId == session.userId}" class="bi bi-three-dots-vertical more-btn" th:data-post-id="${card.postId}"  data-toggle="modal" data-target="#moreModal"></i>
@@ -51,11 +51,14 @@
 							<button type="button" class="btn btn-info col-2 comment-btn" th:data-post-id="${card.postId}">게시</button>
 						</div>
 					</div>
+					<button id="addBtn" th:if="${status.last}" type="button" class="btn btn-success btn-block" th:data-last-id="${card.postId}">더보기</button>
 				</div>
 				<!-- /카드 -->
+				<div id="addCard"></div>
+				
 			</div>
 			<!-- /타임라인 -->
-		
+			
 		</div>
 		<!-- /전체 layout -->
 
@@ -76,6 +79,25 @@
 	
 	<script layout:fragment="script">
 		$(document).ready(function() {
+			
+			$("#addBtn").on("click", function() {
+				
+				let id = $(this).data("last-id");
+				
+				$.ajax({
+					type:"get"
+					, url:"/post/newCard"
+					, data:{"id":id}
+					, success:function(data) {
+						$("#addCard").append(data);
+
+					}
+					, error:function() {
+						alert("에러!!")
+					}
+				});
+				
+			});
 			
 			$("#deleteBtn").on("click", function() {
 				let postId = $(this).data("post-id");
