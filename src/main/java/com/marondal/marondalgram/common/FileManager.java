@@ -12,6 +12,8 @@ public class FileManager {
 	
 	public static final String FILE_UPLOAD_PATH = "D:\\dulumaryT\\web\\20240516\\springProject\\upload\\marondalgram";
 	
+	
+	
 	// 파일저장
 	public static String saveFile(int userId, MultipartFile file) {
 		
